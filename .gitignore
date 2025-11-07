@@ -1,0 +1,25 @@
+.env
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+.DS_Store
+.venv/
+venv/
+env/
+.idea/
+.vscode/
+node_modules/
+
+# Build artifacts & indices
+storage/
+*.npz
+*.npy
+*.pkl
+
+# Large or local models
+final_model/
+
+# Caches
+.cache/
+*.log

@@ -1,0 +1,20 @@
+{
+  "data_path": "data/data.txt",
+  "embedding_model_path": "src/final_model",
+  "faiss_index_path": "data/index.faiss",
+  "docstore_path": "data/docstore.json",
+  "vectors_path": "data/vectors.npy",
+  "vectorizer_path": "data/vectorizer.pkl",
+  "tfidf_matrix_path": "data/tfidf.npz",
+  "use_faiss": false,
+  "chunk_size": 800,
+  "chunk_overlap": 120,
+  "separators": ["\n\n", "\n", ".", "?", "!", ";", ","],
+  "top_k": 5,
+  "similarity_threshold": 0.6,
+  "contexts_max": 3,
+  "response_language": "vi",
+  "max_output_tokens": 150,
+  "temperature": 0.2,
+  "backend": "gemma"
+}
