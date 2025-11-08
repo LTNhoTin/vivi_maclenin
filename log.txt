@@ -1,193 +1,82 @@
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/uvicorn/__main__.py", line 4, in <module>
-    uvicorn.main()
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/click/core.py", line 1157, in __call__
-    return self.main(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/click/core.py", line 1078, in main
-    rv = self.invoke(ctx)
-         ^^^^^^^^^^^^^^^^
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/click/core.py", line 1434, in invoke
-    return ctx.invoke(self.callback, **ctx.params)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/click/core.py", line 783, in invoke
-    return __callback(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/uvicorn/main.py", line 410, in main
-    run(
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/uvicorn/main.py", line 577, in run
-    server.run()
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/uvicorn/server.py", line 65, in run
-    return asyncio.run(self.serve(sockets=sockets))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nhotin/anaconda3/lib/python3.11/asyncio/runners.py", line 190, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/home/nhotin/anaconda3/lib/python3.11/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/uvicorn/server.py", line 69, in serve
-    await self._serve(sockets)
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/uvicorn/server.py", line 76, in _serve
-    config.load()
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/uvicorn/config.py", line 434, in load
-    self.loaded_app = import_from_string(self.app)
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nhotin/anaconda3/lib/python3.11/site-packages/uvicorn/importer.py", line 19, in import_from_string
-    module = importlib.import_module(module_str)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/nhotin/anaconda3/lib/python3.11/importlib/__init__.py", line 126, in import_module
-    return _bootstrap._gcd_import(name[level:], package, level)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
-  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
-  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
-  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
-  File "<frozen importlib._bootstrap_external>", line 936, in exec_module
-  File "<frozen importlib._bootstrap_external>", line 1074, in get_code
-  File "<frozen importlib._bootstrap_external>", line 1004, in source_to_code
-  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-  File "/home/nhotin/work/mac-lenin-socbot/backend/src/main.py", line 303
-    logger.info(f"[RAG] Sử dụng {len(contexts_for_llm)} contexts (scores: {[f'{c[\"score\"]:.3f}' for c in contexts_for_llm]})")
-                                                                                                                                   ^
-SyntaxError: f-string expression part cannot include a backslash
-2025-11-08 20:21:32.987060: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2025-11-08 20:21:33.018984: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-2025-11-08 20:21:33.770351: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-Skipping import of cpp extensions due to incompatible torch version 2.8.0+cu128 for torchao version 0.14.0         Please see GitHub issue #2919 for more info
-2025-11-08 20:21:35 [INFO] Loading faiss with AVX2 support.
-2025-11-08 20:21:35 [INFO] Successfully loaded faiss with AVX2 support.
-2025-11-08 20:21:35 [INFO] [RAG] Đang load embedding model từ /home/nhotin/work/LegalBizAI_project/finetune/embedding_models/google_gemma_embeddings/output/gemma/final_model (backend: gemma)
-2025-11-08 20:21:36 [INFO] [RAG] ✓ Embedding model đã load thành công
-INFO:     Started server process [948569]
-INFO:     Waiting for application startup.
-2025-11-08 20:21:36 [INFO] ============================================================
-2025-11-08 20:21:36 [INFO] [STARTUP] Đang khởi tạo các clients...
-2025-11-08 20:21:36 [INFO] [STARTUP] Khởi tạo Ollama client: gpt-oss:20b tại http://server.nhotin.space:11434
-2025-11-08 20:21:36 [INFO] [STARTUP] ✓ Ollama client đã sẵn sàng
-2025-11-08 20:21:36 [INFO] [STARTUP] Khởi tạo OpenAI client: gpt-4o-mini
-2025-11-08 20:21:36 [INFO] [STARTUP] ✓ OpenAI client đã sẵn sàng
-2025-11-08 20:21:36 [INFO] [STARTUP] Đang load RAG index...
-2025-11-08 20:21:36 [INFO] [RAG] Đang load index (backend: gemma, use_faiss: False)
-2025-11-08 20:21:36 [INFO] [RAG] Đã load 14 chunks từ docstore
-2025-11-08 20:21:36 [INFO] [RAG] ✓ Đã load 14 vectors và build kNN index
-2025-11-08 20:21:36 [INFO] [STARTUP] ✓ RAG index đã load thành công
-2025-11-08 20:21:36 [INFO] ============================================================
-2025-11-08 20:21:36 [INFO] [STARTUP] ✓ Tất cả services đã sẵn sàng!
-2025-11-08 20:21:36 [INFO] ============================================================
-INFO:     Application startup complete.
+nohup: ignoring input
+INFO:     Will watch for changes in these directories: ['/home/nhotin/work/vivimaclenin/backend']
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-2025-11-08 20:21:55 [INFO] [QUERY] Nhận câu hỏi: Nội dung chính sách dân tộc của Đảng và Nhà nước ta dựa trên những nguyên tắc nào?...
-2025-11-08 20:21:55 [INFO] [RAG] Bắt đầu search với top_k=5
-2025-11-08 20:21:55 [INFO] [RAG] Tìm thấy 5 kết quả
-2025-11-08 20:21:55 [INFO] [RAG] Sau filter (threshold=0.0): 5 contexts
-2025-11-08 20:21:55 [INFO] [RAG] Sử dụng 3 contexts (scores: [0.013, 0.012, 0.011])
-2025-11-08 20:21:55 [INFO] [MODEL] Chọn Ollama (gpt-oss:20b) - không có ảnh và không websearch
-2025-11-08 20:21:55 [INFO] [OLLAMA] Gửi request đến http://server.nhotin.space:11434/api/generate, model: gpt-oss:20b
-2025-11-08 20:22:10 [INFO] [OLLAMA] Nhận response thành công, độ dài: 1971 chars
-2025-11-08 20:22:10 [INFO] [QUERY] Hoàn thành trong 14517ms, độ dài answer: 1971 chars
+INFO:     Started reloader process [962389] using WatchFiles
+2025-11-08 20:41:57.332602: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2025-11-08 20:41:57.365129: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2025-11-08 20:41:58.114645: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+Skipping import of cpp extensions due to incompatible torch version 2.8.0+cu128 for torchao version 0.14.0         Please see GitHub issue #2919 for more info
+2025-11-08 20:41:59 [INFO] Loading faiss with AVX2 support.
+2025-11-08 20:41:59 [INFO] Successfully loaded faiss with AVX2 support.
+2025-11-08 20:41:59 [INFO] [RAG] Đang load embedding model từ /home/nhotin/work/LegalBizAI_project/finetune/embedding_models/google_gemma_embeddings/output/gemma/final_model (backend: gemma)
+2025-11-08 20:42:00 [INFO] [RAG] ✓ Embedding model đã load thành công
+INFO:     Started server process [962434]
+INFO:     Waiting for application startup.
+2025-11-08 20:42:00 [INFO] ============================================================
+2025-11-08 20:42:00 [INFO] [STARTUP] Đang khởi tạo các clients...
+2025-11-08 20:42:00 [INFO] [STARTUP] Khởi tạo GPTOSS 20B Finetune client: gpt-oss:20b tại http://server.nhotin.space:11434
+2025-11-08 20:42:00 [INFO] [STARTUP] ✓ GPTOSS 20B Finetune client đã sẵn sàng
+2025-11-08 20:42:00 [INFO] [STARTUP] Khởi tạo OpenAI client: gpt-4o-mini
+2025-11-08 20:42:00 [INFO] [STARTUP] ✓ OpenAI client đã sẵn sàng
+2025-11-08 20:42:00 [INFO] [STARTUP] Đang load RAG index...
+2025-11-08 20:42:00 [INFO] [RAG] Đang load index (backend: gemma, use_faiss: False)
+2025-11-08 20:42:00 [INFO] [RAG] Đã load 14 chunks từ docstore
+2025-11-08 20:42:00 [INFO] [RAG] ✓ Đã load 14 vectors và build kNN index
+2025-11-08 20:42:00 [INFO] [STARTUP] ✓ RAG index đã load thành công
+2025-11-08 20:42:00 [INFO] ============================================================
+2025-11-08 20:42:00 [INFO] [STARTUP] ✓ Tất cả services đã sẵn sàng!
+2025-11-08 20:42:00 [INFO] ============================================================
+INFO:     Application startup complete.
+2025-11-08 20:42:12 [INFO] [QUERY] Nhận câu hỏi: Đồng bào, đồng dân, đồng hiệp là đúng hay sai ...
+2025-11-08 20:42:12 [INFO] [RAG] Bắt đầu search với top_k=5
+2025-11-08 20:42:12 [INFO] [RAG] Tìm thấy 5 kết quả
+2025-11-08 20:42:12 [INFO] [RAG] Sau filter (threshold=0.0): 0 contexts
+2025-11-08 20:42:12 [WARNING] [RAG] Không có contexts nào đạt ngưỡng similarity
+2025-11-08 20:42:12 [INFO] [MODEL] Chọn GPTOSS 20B Finetune (gpt-oss:20b) - không có ảnh và không websearch
+2025-11-08 20:42:12 [INFO] ================================================================================
+2025-11-08 20:42:12 [INFO] [RAG DEBUG] ========== SYSTEM PROMPT ==========
+2025-11-08 20:42:12 [INFO] Bạn là ViVi, một chatbot hỗ trợ thông tin dựa trên RAG (Retrieval-Augmented Generation). Trả lời bằng tiếng vi, giọng thân thiện và ngắn gọn. Trả lời trực tiếp dựa trên kiến thức chung của bạn. Nếu câu hỏi yêu cầu thông tin hoặc trích dẫn từ tài liệu cụ thể, hãy nói rằng hiện không có dữ liệu tài liệu để trích dẫn, nhưng vẫn giải thích ngắn gọn theo hiểu biết chung. Không trích nguồn, không mở đầu bằng các cụm như 'Theo ngữ cảnh được cung cấp'. KHÔNG BAO GIỜ tự nhận mình là ChatGPT hay OpenAI. Bạn là ViVi.
+2025-11-08 20:42:12 [INFO] ================================================================================
+2025-11-08 20:42:12 [INFO] [RAG DEBUG] ========== FULL PROMPT (INPUT TO MODEL) ==========
+2025-11-08 20:42:12 [INFO] Bạn là ViVi, một chatbot hỗ trợ thông tin dựa trên RAG (Retrieval-Augmented Generation). Trả lời bằng tiếng vi, giọng thân thiện và ngắn gọn. Trả lời trực tiếp dựa trên kiến thức chung của bạn. Nếu câu hỏi yêu cầu thông tin hoặc trích dẫn từ tài liệu cụ thể, hãy nói rằng hiện không có dữ liệu tài liệu để trích dẫn, nhưng vẫn giải thích ngắn gọn theo hiểu biết chung. Không trích nguồn, không mở đầu bằng các cụm như 'Theo ngữ cảnh được cung cấp'. KHÔNG BAO GIỜ tự nhận mình là ChatGPT hay OpenAI. Bạn là ViVi.
+
+Câu hỏi: Đồng bào, đồng dân, đồng hiệp là đúng hay sai 
+2025-11-08 20:42:12 [INFO] ================================================================================
+2025-11-08 20:42:12 [INFO] [GPTOSS 20B FINETUNE] Gửi request đến http://server.nhotin.space:11434/api/generate, model: gpt-oss:20b
+2025-11-08 20:42:14 [INFO] [RAG DEBUG] ========== MODEL OUTPUT ==========
+2025-11-08 20:42:14 [INFO] Đúng. “Đồng bào, đồng dân, đồng hiệp” là một khẩu hiệu được dùng trong tiếng Việt để diễn tả tinh thần đoàn kết, gắn bó giữa mọi người trong cùng một dân tộc và cùng chung mục tiêu.
+2025-11-08 20:42:14 [INFO] ================================================================================
+2025-11-08 20:42:14 [INFO] [GPTOSS 20B FINETUNE] Nhận response thành công, độ dài: 181 chars
+2025-11-08 20:42:14 [INFO] [QUERY] Hoàn thành trong 2086ms, độ dài answer: 181 chars
 INFO:     116.110.43.207:0 - "POST /query HTTP/1.1" 200 OK
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [948569]
-2025-11-08 20:23:52.985116: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2025-11-08 20:23:53.016932: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-2025-11-08 20:23:53.769750: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-Skipping import of cpp extensions due to incompatible torch version 2.8.0+cu128 for torchao version 0.14.0         Please see GitHub issue #2919 for more info
-2025-11-08 20:23:55 [INFO] Loading faiss with AVX2 support.
-2025-11-08 20:23:55 [INFO] Successfully loaded faiss with AVX2 support.
-2025-11-08 20:23:55 [INFO] [RAG] Đang load embedding model từ /home/nhotin/work/LegalBizAI_project/finetune/embedding_models/google_gemma_embeddings/output/gemma/final_model (backend: gemma)
-2025-11-08 20:23:56 [INFO] [RAG] ✓ Embedding model đã load thành công
-INFO:     Started server process [949849]
-INFO:     Waiting for application startup.
-2025-11-08 20:23:56 [INFO] ============================================================
-2025-11-08 20:23:56 [INFO] [STARTUP] Đang khởi tạo các clients...
-2025-11-08 20:23:56 [INFO] [STARTUP] Khởi tạo GPTOSS 20B Finetune client: gpt-oss:20b tại http://server.nhotin.space:11434
-2025-11-08 20:23:56 [INFO] [STARTUP] ✓ GPTOSS 20B Finetune client đã sẵn sàng
-2025-11-08 20:23:56 [INFO] [STARTUP] Khởi tạo OpenAI client: gpt-4o-mini
-2025-11-08 20:23:56 [INFO] [STARTUP] ✓ OpenAI client đã sẵn sàng
-2025-11-08 20:23:56 [INFO] [STARTUP] Đang load RAG index...
-2025-11-08 20:23:56 [INFO] [RAG] Đang load index (backend: gemma, use_faiss: False)
-2025-11-08 20:23:56 [INFO] [RAG] Đã load 14 chunks từ docstore
-2025-11-08 20:23:56 [INFO] [RAG] ✓ Đã load 14 vectors và build kNN index
-2025-11-08 20:23:56 [INFO] [STARTUP] ✓ RAG index đã load thành công
-2025-11-08 20:23:56 [INFO] ============================================================
-2025-11-08 20:23:56 [INFO] [STARTUP] ✓ Tất cả services đã sẵn sàng!
-2025-11-08 20:23:56 [INFO] ============================================================
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-2025-11-08 20:25:08 [INFO] [QUERY] Nhận câu hỏi: Nội dung chính sách dân tộc của Đảng và Nhà nước ta dựa trên những nguyên tắc nào?...
-2025-11-08 20:25:08 [INFO] [RAG] Bắt đầu search với top_k=5
-2025-11-08 20:25:08 [INFO] [RAG] Tìm thấy 5 kết quả
-2025-11-08 20:25:08 [INFO] [RAG] Sau filter (threshold=0.0): 5 contexts
-2025-11-08 20:25:08 [INFO] [RAG] Sử dụng 3 contexts (scores: [0.013, 0.012, 0.011])
-2025-11-08 20:25:08 [INFO] [MODEL] Chọn GPTOSS 20B Finetune (gpt-oss:20b) - không có ảnh và không websearch
-2025-11-08 20:25:08 [INFO] ================================================================================
-2025-11-08 20:25:08 [INFO] [RAG DEBUG] ========== SYSTEM PROMPT ==========
-2025-11-08 20:25:08 [INFO] Bạn là ViVi, một chatbot hỗ trợ thông tin dựa trên RAG (Retrieval-Augmented Generation). Trả lời bằng tiếng vi, giọng tự nhiên và mạch lạc. Trả lời trực tiếp, rõ ràng và ngắn gọn dựa trên các ngữ cảnh được cung cấp. Không phân tích hay suy đoán ngoài ngữ cảnh, không mở đầu bằng các cụm như 'Theo ngữ cảnh được cung cấp'. Không nhắc tới 'Context 1/2' hay 'Source: Context X' trong câu trả lời, và không trích nguồn trừ khi người dùng yêu cầu. Chỉ dùng bullet khi người dùng yêu cầu; mặc định hãy viết thành một đoạn hoặc vài câu liên kết. KHÔNG BAO GIỜ tự nhận mình là ChatGPT hay OpenAI. Bạn là ViVi.
-2025-11-08 20:25:08 [INFO] ================================================================================
-2025-11-08 20:25:08 [INFO] [RAG DEBUG] ========== FULL PROMPT (INPUT TO MODEL) ==========
-2025-11-08 20:25:08 [INFO] Bạn là ViVi, một chatbot hỗ trợ thông tin dựa trên RAG (Retrieval-Augmented Generation). Trả lời bằng tiếng vi, giọng tự nhiên và mạch lạc. Trả lời trực tiếp, rõ ràng và ngắn gọn dựa trên các ngữ cảnh được cung cấp. Không phân tích hay suy đoán ngoài ngữ cảnh, không mở đầu bằng các cụm như 'Theo ngữ cảnh được cung cấp'. Không nhắc tới 'Context 1/2' hay 'Source: Context X' trong câu trả lời, và không trích nguồn trừ khi người dùng yêu cầu. Chỉ dùng bullet khi người dùng yêu cầu; mặc định hãy viết thành một đoạn hoặc vài câu liên kết. KHÔNG BAO GIỜ tự nhận mình là ChatGPT hay OpenAI. Bạn là ViVi.
+2025-11-08 20:43:41 [INFO] [QUERY] Nhận câu hỏi: cũng được nhỉ ...
+2025-11-08 20:43:41 [INFO] [RAG] Bắt đầu search với top_k=5
+2025-11-08 20:43:41 [INFO] [RAG] Tìm thấy 5 kết quả
+2025-11-08 20:43:41 [INFO] [RAG] Sau filter (threshold=0.0): 5 contexts
+2025-11-08 20:43:41 [INFO] [RAG] Sử dụng 3 contexts (scores: [0.038, 0.032, 0.032])
+2025-11-08 20:43:41 [INFO] [MODEL] Chọn GPTOSS 20B Finetune (gpt-oss:20b) - không có ảnh và không websearch
+2025-11-08 20:43:41 [INFO] ================================================================================
+2025-11-08 20:43:41 [INFO] [RAG DEBUG] ========== SYSTEM PROMPT ==========
+2025-11-08 20:43:41 [INFO] Bạn là ViVi, một chatbot hỗ trợ thông tin dựa trên RAG (Retrieval-Augmented Generation). Trả lời bằng tiếng vi, giọng tự nhiên và mạch lạc. Trả lời trực tiếp, rõ ràng và ngắn gọn dựa trên các ngữ cảnh được cung cấp. Không phân tích hay suy đoán ngoài ngữ cảnh, không mở đầu bằng các cụm như 'Theo ngữ cảnh được cung cấp'. Không nhắc tới 'Context 1/2' hay 'Source: Context X' trong câu trả lời, và không trích nguồn trừ khi người dùng yêu cầu. Chỉ dùng bullet khi người dùng yêu cầu; mặc định hãy viết thành một đoạn hoặc vài câu liên kết. KHÔNG BAO GIỜ tự nhận mình là ChatGPT hay OpenAI. Bạn là ViVi.
+2025-11-08 20:43:41 [INFO] ================================================================================
+2025-11-08 20:43:41 [INFO] [RAG DEBUG] ========== FULL PROMPT (INPUT TO MODEL) ==========
+2025-11-08 20:43:41 [INFO] Bạn là ViVi, một chatbot hỗ trợ thông tin dựa trên RAG (Retrieval-Augmented Generation). Trả lời bằng tiếng vi, giọng tự nhiên và mạch lạc. Trả lời trực tiếp, rõ ràng và ngắn gọn dựa trên các ngữ cảnh được cung cấp. Không phân tích hay suy đoán ngoài ngữ cảnh, không mở đầu bằng các cụm như 'Theo ngữ cảnh được cung cấp'. Không nhắc tới 'Context 1/2' hay 'Source: Context X' trong câu trả lời, và không trích nguồn trừ khi người dùng yêu cầu. Chỉ dùng bullet khi người dùng yêu cầu; mặc định hãy viết thành một đoạn hoặc vài câu liên kết. KHÔNG BAO GIỜ tự nhận mình là ChatGPT hay OpenAI. Bạn là ViVi.
 
 Ngữ cảnh:
+với xuất phát điểm thấp cơ cấu kinh tế sẽ có những biến đổi đa dạng từ một cơ cấu kinh tế chủ yếu là nông nghiệp và công nghiệp còn ở trình độ sơ khai chuyển sang cơ cấu kinh tế theo hướng tăng tỷ trọng công nghiệp và dịch vụ giảm tỷ trọng nông nghiệp chuyển từ cơ cấu vùng lãnh thổ còn chưa định hình sang hình thành các vùng các trung tâm kinh tế lớn chuyển từ cơ cấu lực lượng sản xuất hiện đại nhưng không cân đối trình độ công nghệ nhìn chung còn lạc hậu hoặc trung bình chuyển sang phát c Mác và Ph Ăngghen Toàn tập Sđd t 21 tr 11 triển lực lượng sản xuất với trình độ công nghệ cao, tiên tiến theo xu hướng ứng dụng những thành quả của cách mạng khoa học và công nghệ hiện đại, của kinh tế trì thức, kinh tế số', Cách mạng công nghiệp lần thứ tư..., từ đó hình thành những cơ cấu kinh tế mới hiện đại hơn, với trình độ xã hội hóa cao và đồng bộ hài hòa hơn giữa các vùng, các khu vực, giữa nông thôn và thành thị, đô thị... Quá trình biến đổi trong cơ cấu kinh tế đó tất yếu dẫn đến những biến đổi trong cơ cấu xã hội - giai cấp, cả trong cơ cấu tổng thể cũng như những biến đổi trong nội bộ từng giai cấp, tầng lớp xã hội, nhóm xã hội. Từ đó, vị trí, vai trò của các giai cấp, tầng lớp, các nhóm xã hội cũng thay đổi theo. Mặt khác, nền kinh tế thị trường phát triển mạnh với tính cạnh tranh cao, cộng vối xu thế hội nhập ngày càng sâu rộng khiến cho các giai cấp, tầng lớp xã hội cơ bản trong thòi kỳ này trở nên năng động, có khả năng thích ứng nhanh, chủ động, sáng tạo trong lao động sản xuất để tạo ra những sản phẩm có giá trị, hiệu quả cao và chất lượng tốt đáp ứng nhu cầu của thị trường trong bối cảnh mới. Xu hướng biến đổi này diễn ra rất khác nhau ở mỗi quốc gia khi bắt đầu thời kỳ quá độ lên chủ nghĩa xã hội do bị quy định bởi những khác biệt về trình độ phát triển kinh tế, về hoàn cảnh, điều kiện lịch sử cụ thể của mỗi nước. Hai là. cơ cấu xã hội - giai cấp biến đổi phức tạp. đa dạng, làm xuất hiện các tầng lốp xã hội mới. Chủ nghĩa Mác - Lênin chỉ ra rằng, hình thái kinh tế - xã hội cộng sản chủ nghĩa đã được “thai nghén” từ trong lòng xã hội tư bản chủ nghĩa, do vậy ở giai đoạn đầu của nó vẫn còn những “dấu vết của xã hội cũ” được phản ánh “về mọi phương diện - kinh tế, đạo đức, tinh thần”1. Bên cạnh những dấu vết của xã hội cũ, xuất hiện những yếu tố của xã hội mới do giai cấp công nhân và các giai cấp, tầng lớp trong xã hội bắt tay vào tổ chức xây dựng, do vậy tất yếu sẽ diễn ra sự tồn tại “đan xen” giữa những yếu tố cũ và yếu tố mới. Đây là vấn đề mang tính quy luật, được thể hiện rõ nết nhất trong thời kỳ quá độ lên chủ nghĩa xã hội. Về mặt kinh tế, đó là còn tồn tại kết cấu kinh tế nhiều thành phần. Chính cái kết cấu kinh tế đa dạng, phức tạp này dẫn đến những biến đổi đa dạng, phức tạp trong cơ cấu xã hội - giai cấp mà biểu hiện của nó là trong thời kỳ quá độ lên chủ nghĩa xã hội còn tồn tại các giai cấp, tầng lớp xã hội khác nhau. Ngoài giai cấp công nhân, giai cấp nông dân, tầng lớp trí thức, giai cấp tư sản (tuy đã bị đánh bại nhưng vẫn còn sức mạnh - V.I. Lênin) đã xuất hiện sự tồn tại và phát triển của các tầng lớp xã hội mới như: tầng lớp doanh nhân, tiểu chủ, tầng lớp những người giàu có và trung lưu trong xã hội... Ba là, cơ cấu xã hội - giai cấp biến đổi trong môì quan hệ vừa đấu tranh, vừa liên minh, từng bước xóa bỏ bất bình đăng xã hội dẫn đến sự xích lại gần nhau. Xem c. Mác và Ph. Ángghen: Toàn tập, Sđd, t.19, tr.33.
+
 thể của họ trong quá trình phát triển nông nghiệp xây dựng nông thôn mới Hỗ trợ khuyến khích nông dân học nghề chuyển dịch cơ cấu lao động tiếp nhận và ứng dụng tiến bộ khoa học công nghệ tạo điều kiện thuận lợi để nông dân chuyển sang làm công nghiệp và dịch vụ Nâng cao năng suất lao động trong nông nghiệp mở rộng và nâng cao chất lượng cung ứng các dịch vụ cơ bản về điện nước sạch y tế giáo dục thông tin cải thiện chất lượng cuộc sống của dân cư nông thôn thực hiện có hiệu quả và bền vững công cuộc xóa đói giảm nghèo khuyến khích làm giàu hợp pháp Đối với đội ngũ trí thức, xây dựng đội ngũ ngày càng lớn mạnh, chất lượng cao. Tôn trọng và phát huy tự do tư tưởng trong hoạt động nghiên cứu, sáng tạo. Trọng dụng trí thức trên cơ sở đánh giá đúng phẩm chất, năng lực và kết quả cống hiến. Bảo vệ quyền sở hữu trí tuệ, đãi ngộ và tôn vinh xứng đáng những cống hiến của họ. Có cơ chế, chính sách đặc biệt để thu hút nhân tài xây dựng đất nước. Đối với đội ngũ doanh nhân, tạo cơ chế, môi trường thuận lợi cho doanh nhân phát triển cả về số lượng và chất lượng, có trình độ quản lý, kinh doanh giỏi, có đạo đức nghề nghiệp và trách nhiệm xã hội cao. Có cơ chế, chính sách đảm bảo quyền lợi của đội ngũ doanh nhân. Tôn vinh những doanh nhân có nhiều đóng góp cho sự nghiệp phát triển đất nước. Đối với phụ nữ, nâng cao trình độ mọi mặt và đời sống vật chất, tinh thần của phụ nữ; thực hiện tốt bình đẳng giới, tạo điều kiện và cơ hội cho phụ nữ phát triển toàn diện, phát triển tài năng, thực hiện tốt vai trò của mình. Nghiên cứu, bổ sung và hoàn thiện luật pháp và chính sách đối với lao động nữ, tạo điều kiện và cơ hội để phụ nữ thực hiện tốt vai trò của mình; tăng tỷ lệ phụ nữ tham gia vào cấp ủy và bộ máy quản lý các cấp. Kiên quyết đấu tranh chống các tệ nạn xã hội và xử lý nghiêm minh theo pháp luật
 các hành vi bạo lực, buôn bán, xâm hại nhân phẩm phụ nữ¹. Đối với thế hệ trẻ, đổi mới nội dung, phương thức giáo dục chính trị, tư tưởng, lý tưởng, truyền thống, bồi dưỡng lý tưởng cách mạng, lòng yêu nước, xây dựng đạo đức, lối sống lành mạnh, ý thức tôn trọng và nghiêm chỉnh chấp hành Hiến pháp và pháp luật. Tạo môi trường và điều kiện thuận lợi cho thế hệ trẻ học tập, nghiên cứu, lao động, giải trí, phát triển trí tuệ, kỹ năng, thể lực. Khuyến khích thanh niên nuôi dưỡng ước mơ, hoài bão, xung kích, sáng tạo, làm chủ khoa học, công nghệ hiện đại. Phát huy vai trò của thế hệ trẻ trong sự nghiệp xây dựng và bảo vệ Tổ quốc. 2 Ba là, tạo sự đồng thuận và phát huy tinh thần đoàn kết thống nhất giữa các lực lượng trong khối liên minh và toàn xã hội. Nâng cao nhận thức về tầm quan trọng của khối liên minh, của việc phát huy vai trò của mọi thành phần trong cơ cấu xã hội - giai cấp, từ đó xây dựng chủ trương, chính sách đúng đắn, phù hợp với từng đối tượng để tạo động lực và tạo sự đồng thuận xã hội. Tiếp tục giải quyết tốt các mâu thuẫn, sự khác biệt và phát huy sự thống nhất trong các giai cấp, tầng lớp xã hội nhằm tạo sự đồng thuận, tạo sức mạnh tổng hợp thực hiện sự nghiệp đổi mới, công nghiệp hóa, hiện đại hóa đất nước, phấn đấu vì một nước 1, 2. Xem Đảng Cộng sản Việt Nam: Văn kiện Đại hội đại biểu toàn quốc lần thứ XII, Sđd, tr.163, 162-163 Việt Nam dân giàu, nước mạnh, dân chủ, công bằng, văn minh. Bốn là, hoàn thiện thể chế kinh tế thị trường định hướng xã hội chủ nghĩa, đẩy mạnh phát triển khoa học và công nghệ, tạo môi trường và điều kiện thuận lợi để phát huy vai trò của các chủ thể trong khối liên minh. Xây dựng và hoàn thiện thể chế kinh tế thị trường định hướng xã hội chủ nghĩa nhằm bảo đảm hài hòa lợi ích giữa các giai cấp, tầng lớp xã hội.
 
-nhân đồng thời giữ vững vai trò lãnh đạo của Đảng Cộng sản Việt Nam đối với khối liên minh và đối với toàn xã hội để xây dựng và bảo vệ vững chắc chế độ chính trị giữ vững độc lập dân tộc và định hướng đi lên chủ nghĩa xã hội Trong thời kỳ quá độ lên chủ nghĩa xã hội vẫn còn tồn tại những hệ tư tưởng cũ những phong tục tập quán cũ lạc hậu các thế lực thù địch vẫn tìm mọi cách chống phá chính quyền cách mạng chống phá chế độ mới vì vậy trên lập trường tư tưởng chính trị của giai cấp công nhân để thực hiện liên minh giai cấp, tầng lớp, phải “hoàn thiện, phát huy dân chủ xã hội chủ nghĩa và quyền làm chủ của nhân dân; không ngừng củng cố, phát huy sức mạnh của khối đại đoàn kết toàn dân tộc; tăng cường sự đồng thuận xã hội...”1; “Xây dựng Đảng trong sạch, vững mạnh, nâng cao năng lực lãnh đạo, tăng cường bản chất giai cấp công nhân và tính tiên phong, sức chiến đấu, phát huy truyền thống đoàn kết, thống nhất của Đảng..."². Xây dựng Nhà nước pháp quyền xã hội chủ nghĩa của nhân dân, do nhân dân, vì nhân dân, đảm bảo các lợi ích chính trị, các quyền dân chủ, quyền công dân, quyền làm chủ, quyền con người của công nhân, nông dân, trí thức và của nhân dân lao động, từ đó, thực hiện quyền lực thuộc về nhân dân. Động viên các lực lượng trong khối liên minh gương mẫu chấp hành đường lối chính trị của Đảng; pháp luật và chính sách của Nhà nước ; sẵn sàng tham gia chiến đấu bảo vệ những thành quả cách mạng, bảo vệ chế độ xã hội chủ nghĩa. Đồng thời, kiên quyết đấu tranh chống mọi biểu hiện tiêu cực và âm mưu “diễn biến hòa bình” của các thế lực thù địch và phản động. - Nội dung văn hóa - xã hội của liên minh: Tổ chức liên minh để các lực lượng dưới sự lãnh đạo của Đảng cùng nhau xây dựng nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc, đồng thời tiếp thu những tinh hoa, giá trị văn hóa của nhân loại và thời đại. 1, 2. Đảng Cộng sản Việt Nam: Văn kiện Đại hội đại biểu toàn quốc lần thứ XII, Sđd, tr.79, 80. Nội dung văn hóa, xã hội của liên minh giai cấp, tầng lớp đòi hỏi phải đảm bảo “gắn tăng trưởng kinh tế với phát triển văn hóa, phát triển, xây dựng con người và thực hiện tiến bộ, công bằng xã hội”¹. Xây dựng nền văn hóa và con người Việt Nam phát triển toàn diện, hướng đến chân - thiện - mỹ, thấm nhuần tinh thần dân tộc, nhân văn, dân chủ và khoa học. Văn hóa thực sự trở thành nền tảng tinh thần vững chắc của xã hội, là sức mạnh nội sinh quan trọng bảo đảm sự phát triển bền vững và bảo vệ vững chắc Tổ quốc vì mục tiêu “dân giàu, nước mạnh, dân chủ, công bằng, văn minh”2. Nâng cao chất lượng nguồn nhân lực; xoá đói giảm nghèo; thực hiện tốt các chính sách xã hội đối với công nhân, nông dân, trí thức và các tầng lớp nhân dân; chăm sóc sức khoẻ và nâng cao chất lượng sống cho nhân dân; nâng cao dân trí, thực hiện tốt an sinh xã hội. Đây là nội dung cơ bản, lâu dài tạo điều kiện cho liên minh giai cấp, tầng lớp phát triển bền vững. b) Phương hướng cơ bản để xây dựng cơ cấu xã hội - giai cấp và tăng cường liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam Một là, đẩy mạnh công nghiệp hóa, hiện đại hóa; giải quyết tốt mối quan hệ giữa tăng trưởng kinh tế với đảm bảo tiến bộ, công bằng xã hội, tạo môi trường và điều kiện thúc đẩy biến đổi cơ cấu xã hội - giai cấp theo hướng tích cực. 1, 2. Đảng Cộng sản Việt Nam: Văn kiện Đại hội đại biểu toàn quốc lần thứ XII, Sđd, tr.124, 126. Cơ cấu xã hội muốn biến đổi theo hướng tích cực phải dựa trên cơ sở tăng trưởng và phát triển kinh tế nhanh, bền vững.
+ứng yêu cầu của quá trình công nghiệp hóa hiện đại hóa gắn với kinh tế tri thức và Cách mạng công nghiệp lần thứ tư đang có xu hướng phát triển mạnh Bên cạnh đó sự phân hóa giàu nghèo trong nội bộ công nhân cũng ngày càng rõ nết Một bộ phận công nhân thu nhập thấp giác ngộ ý thức chính trị giai cấp chưa cao và còn nhiều khó khăn về mọi mặt vẫn tồn tại Giai cấp nông dân cùng với nông nghiệp nông thôn có vị trí chiến lược trong sự nghiệp công nghiệp hóa hiện đại 1 Xem Đảng Cộng sản Việt Nam Vẫn kiện Đang toàn tập Sđd t 65 tr 214 hóa nông nghiệp, nông thôn gắn với xây dựng nông thôn mới, góp phần xây dựng và bảo vệ Tổ quốc, là cơ sở và lực lượng quan trọng để phát triển kinh tế - xã hội bền vững, giữ vững ổn định chính trị, đảm bảo an ninh, quốc phòng ; giữ gìn, phát huy bản sắc văn hóa dân tộc và bảo vệ môi trường sinh thái ; là chủ thể của quá trình phát triển, xây dựng nông thôn mới gắn với xây dựng các cơ sở công nghiệp, dịch vụ và phát triển đô thị theo quy hoạch ; phát triển toàn diện, hiện đại hóa nông nghiệp...¹. Trong thời kỳ quá độ lên chủ nghĩa xã hội, giai cấp nông dân cũng có sự biến đổi, đa dạng về cơ cấu giai cấp ; có xu hướng giảm dần về số lượng và tỷ lệ trong cơ cấu xã hội giai cấp. Một bộ phận nông dân chuyển sang lao động trong các khu công nghiệp hoặc dịch vụ có tính chất công nghiệp và trở thành công nhân. Trong giai cấp nông dân xuất hiện những chủ trang trại lớn, đồng thời vẫn còn những nông dân mất ruộng đất, nông dân đi làm thuê... sự phân hóa giàu nghèo trong nội bộ nông dân cũng ngày càng rõ. Đội ngũ trí thức là lực lượng lao động sáng tạo đặc biệt quan trọng trong tiến trình đẩy mạnh công nghiệp hóa, hiện đại hóa đất nước và hội nhập quốc tế, xây dựng kinh tế tri thức, phát triển nền văn hóa Việt Nam tiên tiến, đậm đà bản sắc dân tộc; là một lực lượng trong khối liên minh. Xây dựng đội ngũ trí thức vững mạnh là trực tiếp nâng tầm trí tuệ của dân tộc, sức mạnh của đất nước, 1. Xem Đảng Cộng sản Việt Nam: Văn kiện Đảng toàn tập, Sđd, t.67, tr.827. nâng cao năng lực lãnh đạo của Đảng và chất lượng hoạt động của hệ thống chính trị¹. Hiện nay, cùng với yêu cầu đẩy mạnh công nghiệp hóa, hiện đại hóa gắn với phát triển kinh tế tri thức trong điều kiện khoa học - công nghệ và Cách mạng công nghiệp lần thứ tư đang phát triển mạnh mẽ thì vai trò của đội ngũ trí thức càng trở nên quan trọng. Đội ngũ doanh nhân: Hiện nay ở Việt Nam, đội ngũ doanh nhân phát triển nhanh cả về số lượng và quy mô với vai trò không ngừng tăng lên. Đây là tầng lớp xã hội đặc biệt được Đảng ta chủ trương xây dựng thành một đội ngũ vững mạnh. Trong đội ngũ này có doanh nhân với tiềm lực kinh tế lớn, có doanh nhân vừa và nhỏ thuộc các thành phần kinh tế khác nhau, đang đóng góp tích cực vào việc thực hiện chiến lược phát triển kinh tế - xã hội, giải quyết việc làm cho người lao động và tham gia giải quyết các vấn đề an sinh xã hội, xóa đói, giảm nghèo. Vì vậy, xây dựng đội ngũ doanh nhân lớn mạnh, có năng lực, trình độ và phẩm chất, uy tín cao sẽ góp phần tích cực nâng cao chất lượng, hiệu quả, sức cạnh tranh, phát triển nhanh, bền vững và bảo đảm độc lập, tự chủ của nền kinh tế.... Đại hội XIII của Đảng yêu cầu: “Phát triển đội ngũ doanh nhân lớn mạnh về số lượng, chất lượng, có tinh thần cống 1. Xem Đảng Cộng sản Việt Nam: Văn kiện Đảng toàn tập, Sđd, t.69, tr.896. 2. Xem Nghị quyết số 09-NQ/TW, ngày 21/01/2013 của Bộ Chính trị về xây dựng và phát huy vai trò của đội ngũ doanh nhân Việt Nam trong thời kỳ đẩy mạnh công nghiệp hóa, hiện đại hóa và hội nhập quốc tế hiến cho dân tộc, có chuẩn mực văn hóa, đạo đức tiến bộ và trình độ quản trị, kinh doanh giỏi"¹.
 
-xét dưới góc độ chính trị trong một chế độ xã hội nhất định chính cuộc đấu tranh giai cấp của các giai cấp có lợi ích đối lập nhau đặt ra nhu cầu tất yếu khách quan mỗi giai cấp đứng ở vị trí trung tâm đều phải tìm cách liên minh với các giai cấp tầng lớp xã hội khác có những lợi ích phù hợp với mình để tập hợp lực lượng thực hiện những nhu cầu và lợi ích chung đó là quy luật c Mác và Ph Ăngghen Toàn tập Sđd t 8 tr 762 mang tính phố biến và là động lực lớn cho sự phát triển của các xã hội có giai cấp Trong cách mạng xã hội chủ nghĩa, dưới sự lãnh đạo của Đảng Cộng sản, giai cấp công nhân phải liên minh với giai cấp nông dân và các tầng lớp nhân dân lao động để tạo sức mạnh tổng hợp đảm bảo cho thắng lợi của cuộc cách mạng xã hội chủ nghĩa cả trong giai đoạn giành chính quyền và giai đoạn xây dựng chế độ xã hội mới. Vận dụng và phát triển sáng tạo quan điểm của c. Mác và Ph. Ăngghen trong giai đoạn chủ nghĩa tư bản đã phát triển cao, bước sang giai đoạn đế quốc chủ nghĩa, V.I. Lênin cũng khẳng định liên minh công, nông là vấn đề mang tính nguyên tắc để đảm bảo cho thắng lợi của cuộc cách mạng xã hội chủ nghĩa Tháng Mười Nga năm 1917. V.I. Lênin chỉ rõ: “... nếu không liên minh với nông dân thì không thể có được chính quyền của giai cấp vô sản, không thể nghĩ được đến việc duy trì chính quyền đó... Nguyên tắc cao nhất của chuyên chính là duy trì khối liên minh giữa giai cấp vô sản và nông dân để giai cấp vô sản có thể giữ được vai trò lãnh đạo và chính quyền nhà nước”1. Trên thực tế, trong bước đầu của thời kỳ quá độ lên chủ nghĩa xã hội, V.I. Lênin đã chủ trương mở rộng khôi liên minh giữa giai cấp công nhân vối giai cấp nông dân và các tầng lớp xã hội khác. Ông xem đây là một hình thức liên minh đặc biệt không chỉ trong giai đoạn giành chính V.I. Lênin: Toàn tập, Sđd, t.44, tr.57. quyển, mà phải được đảm bảo trong suốt quá trình xây dựng chủ nghĩa xã hội. V.I. Lênin chỉ rõ: “Chuyên chính vô sản là một hình thức đặc biệt của liên minh giai cấp giữa giai cấp vô sản, đội tiền phong của những người lao động, với đông đảo những tầng lớp lao động không phải vô sản (tiểu tư sản, tiểu chủ, nông dân, trí thức, v.v.), hoặc với phần lớn những tầng lớp đó, liên minh nhằm chống lại tư bản, liên minh nhằm lật đổ hoàn toàn tư bản, tiêu diệt hoàn toàn sự chống cự của giai cấp tư sản và những mưu toan khôi phục của giai cấp ấy, nhằm thiết lập và củng cố vĩnh viễn chủ nghĩa xã hội”1. Trong thời kỳ quá độ lên chủ nghĩa xã hội, giai cấp công nhân, giai cấp nông dân và tầng lớp lao động khác vừa là lực lượng sản xuất cơ bản, vừa là lực lượng chính trị - xã hội to lớn. Nếu thực hiện tốt khối liên minh giữa giai cấp công nhân với giai cấp nông dân và các tầng lớp nhân dân lao động khác, trong đó trước hết là với trí thức thì không những xây dựng được cơ sở kinh tế vững mạnh mà chế độ chính trị xã hội chủ nghĩa cũng ngày càng được củng cố vững chắc. Khẳng định vai trò của trí thức trong khối liên minh, V.I. Lênin viết: “Trước sự liên minh của các đại biểu khoa học, giai cấp vô sản và giới kỹ thuật, không một thế lực đen tối nào đứng vững được”2. Xét từ góc độ kinh tế, trong thòi kỳ quá độ lên chủ nghĩa xã hội - tức là cách mạng đã chuyển sang giai đoạn V.I. Lênin: Toàn tập, Sđd, t.38, tr.452. 2 V.I. Lênin: Toàn tập, Sđd, t.40, tr.218. mới, cùng với tất yếu chính trị - xã hội, tính tất yếu kinh tế của liên minh lại nổi lên với tư cách là nhân tố quyết định nhất cho sự thắng lợi hoàn toàn của chủ nghĩa xã hội.
-
-Câu hỏi: Nội dung chính sách dân tộc của Đảng và Nhà nước ta dựa trên những nguyên tắc nào?
-2025-11-08 20:25:08 [INFO] ================================================================================
-2025-11-08 20:25:08 [INFO] [GPTOSS 20B FINETUNE] Gửi request đến http://server.nhotin.space:11434/api/generate, model: gpt-oss:20b
-2025-11-08 20:25:14 [INFO] [RAG DEBUG] ========== MODEL OUTPUT ==========
-2025-11-08 20:25:14 [INFO] Chính sách dân tộc của Đảng và Nhà nước Việt Nam được xây dựng dựa trên những nguyên tắc cơ bản sau:
-
-- **Đồng bào, đồng dân, đồng hiệp**: Tôn trọng, bảo vệ quyền lợi, lợi ích của mọi dân tộc, đồng thời khuyến khích sự hòa nhập, hợp tác và phát triển chung.
-- **Bình đẳng và công bằng**: Đảm bảo mọi dân tộc có quyền được tham gia, quyết định và hưởng lợi từ các chính sách phát triển kinh tế‑xã hội, giáo dục, y tế, văn hoá.
-- **Phát triển bền vững và toàn diện**: Thúc đẩy nâng cao chất lượng cuộc sống, phát triển kinh tế, nâng cao năng lực lao động và giáo dục cho các dân tộc thiểu số, đồng thời bảo tồn và phát huy giá trị văn hoá truyền thống.
-- **Tôn trọng đa dạng văn hoá**: Bảo vệ, phát huy, truyền bá các giá trị văn hoá dân tộc, đồng thời khuyến khích sự giao lưu, học hỏi giữa các dân tộc.
-- **Tích hợp vào xã hội dân tộc**: Thúc đẩy hội nhập xã hội, giảm thiểu bất bình đẳng, tạo điều kiện cho mọi dân tộc tham gia vào quá trình xây dựng và bảo vệ đất nước.
-
-Những nguyên tắc này hướng tới mục tiêu xây dựng một xã hội dân tộc thống nhất, hòa hợp, phát triển bền vững và công bằng.
-2025-11-08 20:25:14 [INFO] ================================================================================
-2025-11-08 20:25:14 [INFO] [GPTOSS 20B FINETUNE] Nhận response thành công, độ dài: 1095 chars
-2025-11-08 20:25:14 [INFO] [QUERY] Hoàn thành trong 6720ms, độ dài answer: 1095 chars
+Câu hỏi: cũng được nhỉ 
+2025-11-08 20:43:41 [INFO] ================================================================================
+2025-11-08 20:43:41 [INFO] [GPTOSS 20B FINETUNE] Gửi request đến http://server.nhotin.space:11434/api/generate, model: gpt-oss:20b
+2025-11-08 20:43:47 [INFO] [RAG DEBUG] ========== MODEL OUTPUT ==========
+2025-11-08 20:43:47 [INFO] Bạn có thể đặt câu hỏi bất cứ lúc nào. Mình sẽ cố gắng trả lời nhanh và chính xác nhất.
+2025-11-08 20:43:47 [INFO] ================================================================================
+2025-11-08 20:43:47 [INFO] [GPTOSS 20B FINETUNE] Nhận response thành công, độ dài: 87 chars
+2025-11-08 20:43:47 [INFO] [QUERY] Hoàn thành trong 5742ms, độ dài answer: 87 chars
 INFO:     116.110.43.207:0 - "POST /query HTTP/1.1" 200 OK
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [949849]
-2025-11-08 20:28:44.112802: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-2025-11-08 20:28:44.144640: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-2025-11-08 20:28:44.885698: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-Skipping import of cpp extensions due to incompatible torch version 2.8.0+cu128 for torchao version 0.14.0         Please see GitHub issue #2919 for more info
-2025-11-08 20:28:46 [INFO] Loading faiss with AVX2 support.
-2025-11-08 20:28:46 [INFO] Successfully loaded faiss with AVX2 support.
-2025-11-08 20:28:46 [INFO] [RAG] Đang load embedding model từ /home/nhotin/work/LegalBizAI_project/finetune/embedding_models/google_gemma_embeddings/output/gemma/final_model (backend: gemma)
-2025-11-08 20:28:47 [INFO] [RAG] ✓ Embedding model đã load thành công
-INFO:     Started server process [952350]
-INFO:     Waiting for application startup.
-2025-11-08 20:28:47 [INFO] ============================================================
-2025-11-08 20:28:47 [INFO] [STARTUP] Đang khởi tạo các clients...
-2025-11-08 20:28:47 [INFO] [STARTUP] Khởi tạo GPTOSS 20B Finetune client: gpt-oss:20b tại http://server.nhotin.space:11434
-2025-11-08 20:28:47 [INFO] [STARTUP] ✓ GPTOSS 20B Finetune client đã sẵn sàng
-2025-11-08 20:28:47 [INFO] [STARTUP] Khởi tạo OpenAI client: gpt-4o-mini
-2025-11-08 20:28:47 [INFO] [STARTUP] ✓ OpenAI client đã sẵn sàng
-2025-11-08 20:28:47 [INFO] [STARTUP] Đang load RAG index...
-2025-11-08 20:28:47 [INFO] [RAG] Đang load index (backend: gemma, use_faiss: False)
-2025-11-08 20:28:47 [INFO] [RAG] Đã load 14 chunks từ docstore
-2025-11-08 20:28:47 [INFO] [RAG] ✓ Đã load 14 vectors và build kNN index
-2025-11-08 20:28:47 [INFO] [STARTUP] ✓ RAG index đã load thành công
-2025-11-08 20:28:47 [INFO] ============================================================
-2025-11-08 20:28:47 [INFO] [STARTUP] ✓ Tất cả services đã sẵn sàng!
-2025-11-08 20:28:47 [INFO] ============================================================
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
