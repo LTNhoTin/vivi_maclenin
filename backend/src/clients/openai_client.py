@@ -1,7 +1,10 @@
 import os
+import logging
 import requests
 from typing import List, Dict, Tuple, Optional
 from openai import OpenAI
+
+logger = logging.getLogger(__name__)
 
 
 class OpenAIClient:
@@ -182,11 +185,7 @@ class OpenAIClient:
                 "Authorization": f"Bearer {self.api_key}"
             }
             
-            # Debug logging
-            import logging
-            logging.basicConfig(level=logging.DEBUG)
-            logger = logging.getLogger(__name__)
-            logger.debug(f"OpenAI request: model={self.model_name}, use_websearch={use_websearch}, request_body={request_body}")
+            logger.info(f"[OPENAI] Gửi request đến model {self.model_name}, use_websearch={use_websearch}")
             
             response = requests.post(
                 "https://api.openai.com/v1/responses",
@@ -198,8 +197,7 @@ class OpenAIClient:
             
             result = response.json()
             
-            # Debug logging response
-            logger.debug(f"OpenAI response status: {response.status_code}, result keys: {result.keys() if isinstance(result, dict) else 'not a dict'}")
+            logger.info(f"[OPENAI] Nhận response thành công, status: {response.status_code}")
             
             # Xử lý response format mới với output array
             answer = ""

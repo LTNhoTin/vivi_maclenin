@@ -1,6 +1,6 @@
 {
   "data_path": "data/data.txt",
-  "embedding_model_path": "src/final_model",
+  "embedding_model_path": "~/work/LegalBizAI_project/finetune/embedding_models/google_gemma_embeddings/output/gemma/final_model",
   "faiss_index_path": "data/index.faiss",
   "docstore_path": "data/docstore.json",
   "vectors_path": "data/vectors.npy",
@@ -11,10 +11,10 @@
   "chunk_overlap": 120,
   "separators": ["\n\n", "\n", ".", "?", "!", ";", ","],
   "top_k": 5,
-  "similarity_threshold": 0.6,
+  "similarity_threshold": 0.0,
   "contexts_max": 3,
   "response_language": "vi",
-  "max_output_tokens": 2048,
+  "max_output_tokens": 4096,
   "temperature": 0.2,
   "backend": "gemma"
 }

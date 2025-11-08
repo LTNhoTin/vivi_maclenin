@@ -7,7 +7,6 @@ import { faMessage, faTrash, faPlus, faImage, faTimes, faDatabase, faGlobe } fro
 import ReactMarkdown from "react-markdown"
 import robot_img from "../assets/ic5.png"
 import { sendMessageChatService } from "./chatbotService"
-import LinkBox from "./LinkBox"
 import commonQuestionsData from "../db/commonQuestions.json"
 
 function ChatBot(props) {
@@ -25,110 +24,7 @@ function ChatBot(props) {
   const [lightboxImage, setLightboxImage] = useState(null)
   const [useWebsearch, setUseWebsearch] = useState(false)
 
-  // Hàm load chats từ localStorage
-  const loadChatsFromCache = () => {
-    try {
-      const cachedChats = localStorage.getItem("vivi_chat_history")
-      const cachedCurrentChatId = localStorage.getItem("vivi_current_chat_id")
-      
-      if (cachedChats) {
-        const parsedChats = JSON.parse(cachedChats)
-        // Convert createdAt từ string về Date object
-        Object.keys(parsedChats).forEach((chatId) => {
-          if (parsedChats[chatId].createdAt) {
-            parsedChats[chatId].createdAt = new Date(parsedChats[chatId].createdAt)
-          }
-        })
-        return { chats: parsedChats, currentChatId: cachedCurrentChatId || "default" }
-      }
-    } catch (error) {
-      console.error("Lỗi khi load cache:", error)
-    }
-    return null
-  }
-
-  // Giới hạn số lượng chat được lưu (giữ 20 chat gần nhất)
-  const MAX_CACHED_CHATS = 20
-
-  // Hàm tự động xóa chat cũ khi vượt quá giới hạn
-  const trimOldChats = useCallback((chatsToTrim) => {
-    const chatEntries = Object.entries(chatsToTrim)
-    if (chatEntries.length <= MAX_CACHED_CHATS) {
-      return chatsToTrim
-    }
-    
-    // Sắp xếp theo thời gian tạo (mới nhất trước)
-    chatEntries.sort((a, b) => {
-      const dateA = a[1].createdAt instanceof Date ? a[1].createdAt : new Date(a[1].createdAt)
-      const dateB = b[1].createdAt instanceof Date ? b[1].createdAt : new Date(b[1].createdAt)
-      return dateB - dateA
-    })
-    
-    // Giữ lại MAX_CACHED_CHATS chat gần nhất
-    const trimmedEntries = chatEntries.slice(0, MAX_CACHED_CHATS)
-    return Object.fromEntries(trimmedEntries)
-  }, [])
-
-  // Hàm lưu chats vào localStorage
-  const saveChatsToCache = useCallback((chatsToSave, chatId) => {
-    try {
-      // Tự động xóa chat cũ nếu vượt quá giới hạn
-      let chatsToStore = trimOldChats(chatsToSave)
-      
-      // Convert Date objects thành ISO strings để lưu
-      chatsToStore = JSON.parse(JSON.stringify(chatsToStore))
-      Object.keys(chatsToStore).forEach((id) => {
-        if (chatsToStore[id].createdAt instanceof Date) {
-          chatsToStore[id].createdAt = chatsToStore[id].createdAt.toISOString()
-        }
-      })
-      localStorage.setItem("vivi_chat_history", JSON.stringify(chatsToStore))
-      if (chatId) {
-        localStorage.setItem("vivi_current_chat_id", chatId)
-      }
-    } catch (error) {
-      console.error("Lỗi khi lưu cache:", error)
-      // Nếu lỗi do localStorage đầy, thử xóa một số chat cũ
-      if (error.name === "QuotaExceededError") {
-        try {
-          // Thử xóa một nửa số chat cũ
-          const chatEntries = Object.entries(chatsToSave)
-          chatEntries.sort((a, b) => {
-            const dateA = a[1].createdAt instanceof Date ? a[1].createdAt : new Date(a[1].createdAt)
-            const dateB = b[1].createdAt instanceof Date ? b[1].createdAt : new Date(b[1].createdAt)
-            return dateB - dateA
-          })
-          const keepCount = Math.max(1, Math.floor(chatEntries.length / 2))
-          const trimmedChats = Object.fromEntries(chatEntries.slice(0, keepCount))
-          
-          // Cập nhật state và thử lưu lại
-          setChats(trimmedChats)
-          const trimmedToStore = JSON.parse(JSON.stringify(trimmedChats))
-          Object.keys(trimmedToStore).forEach((id) => {
-            if (trimmedToStore[id].createdAt instanceof Date) {
-              trimmedToStore[id].createdAt = trimmedToStore[id].createdAt.toISOString()
-            }
-          })
-          localStorage.setItem("vivi_chat_history", JSON.stringify(trimmedToStore))
-          alert(`Bộ nhớ cache đầy. Đã tự động xóa một số cuộc trò chuyện cũ. Còn lại ${keepCount} cuộc trò chuyện.`)
-        } catch (retryError) {
-          // Nếu vẫn lỗi, xóa toàn bộ cache
-          try {
-            localStorage.removeItem("vivi_chat_history")
-            localStorage.removeItem("vivi_current_chat_id")
-            setChats(defaultChats)
-            setCurrentChatId("default")
-            alert("Bộ nhớ cache đầy. Đã xóa toàn bộ lịch sử trò chuyện.")
-          } catch (finalError) {
-            console.error("Lỗi khi xóa cache:", finalError)
-            alert("Bộ nhớ cache đầy và không thể xóa tự động. Vui lòng xóa thủ công qua nút Clear Cache.")
-          }
-        }
-      }
-    }
-  }, [trimOldChats])
-
-  // Load từ cache khi component mount (lazy initialization)
+  // Không lưu cache nữa - reload trang sẽ mất hết lịch sử
   const defaultChats = {
     default: {
       id: "default",
@@ -147,20 +43,9 @@ function ChatBot(props) {
     },
   }
 
-  // Tối ưu: chỉ load cache một lần
-  const [chats, setChats] = useState(() => {
-    const cachedData = loadChatsFromCache()
-    return cachedData?.chats || defaultChats
-  })
-  const [currentChatId, setCurrentChatId] = useState(() => {
-    // Load lại từ localStorage để lấy currentChatId (đã được cache trong memory)
-    try {
-      const cachedCurrentChatId = localStorage.getItem("vivi_current_chat_id")
-      return cachedCurrentChatId || "default"
-    } catch {
-      return "default"
-    }
-  })
+  // Khởi tạo state không load từ cache
+  const [chats, setChats] = useState(defaultChats)
+  const [currentChatId, setCurrentChatId] = useState("default")
 
   const models = [
     {
@@ -175,10 +60,7 @@ function ChatBot(props) {
 
   const commonQuestions = commonQuestionsData
 
-  // Lưu cache mỗi khi chats hoặc currentChatId thay đổi
-  useEffect(() => {
-    saveChatsToCache(chats, currentChatId)
-  }, [chats, currentChatId, saveChatsToCache])
+  // Không lưu cache nữa - đã bỏ useEffect lưu cache
 
   useEffect(() => {
     scrollToEndChat()
@@ -289,15 +171,79 @@ function ChatBot(props) {
     }
   }
 
-  const handleImageSelect = (file) => {
-    if (file && file.type.startsWith("image/")) {
+  // Hàm nén ảnh để giảm kích thước request
+  const compressImage = (file, maxWidth = 1920, maxHeight = 1920, quality = 0.8) => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = (e) => {
-        setSelectedImage(e.target.result)
+        const img = new Image()
+        img.onload = () => {
+          // Tính toán kích thước mới giữ nguyên tỷ lệ
+          let width = img.width
+          let height = img.height
+          
+          if (width > maxWidth || height > maxHeight) {
+            if (width > height) {
+              height = (height * maxWidth) / width
+              width = maxWidth
+            } else {
+              width = (width * maxHeight) / height
+              height = maxHeight
+            }
+          }
+          
+          // Tạo canvas để resize và nén
+          const canvas = document.createElement('canvas')
+          canvas.width = width
+          canvas.height = height
+          const ctx = canvas.getContext('2d')
+          ctx.drawImage(img, 0, 0, width, height)
+          
+          // Convert sang base64 với quality
+          const mimeType = file.type || 'image/jpeg'
+          const compressedDataUrl = canvas.toDataURL(mimeType, quality)
+          resolve(compressedDataUrl)
+        }
+        img.onerror = reject
+        img.src = e.target.result
       }
+      reader.onerror = reject
       reader.readAsDataURL(file)
-    } else {
-      alert("Vui lòng chọn file ảnh hợp lệ (jpg, png, gif, webp)")
+    })
+  }
+
+  const handleImageSelect = async (file) => {
+    // Chỉ chấp nhận các định dạng được OpenAI hỗ trợ: png, jpeg, gif, webp
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp']
+    const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp']
+    
+    if (file) {
+      const fileExt = file.name?.split('.').pop()?.toLowerCase()
+      const isValidType = allowedTypes.includes(file.type) || allowedExtensions.includes(fileExt)
+      
+      // Reject SVG explicitly
+      if (file.type === 'image/svg+xml' || fileExt === 'svg') {
+        alert("Định dạng SVG không được hỗ trợ. Vui lòng chọn file ảnh hợp lệ (jpg, png, gif, webp)")
+        return
+      }
+      
+      if (isValidType) {
+        try {
+          // Nén ảnh trước khi hiển thị và gửi
+          const compressedImage = await compressImage(file)
+          setSelectedImage(compressedImage)
+        } catch (error) {
+          console.error("Lỗi khi nén ảnh:", error)
+          // Fallback: dùng ảnh gốc nếu nén thất bại
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            setSelectedImage(e.target.result)
+          }
+          reader.readAsDataURL(file)
+        }
+      } else {
+        alert("Vui lòng chọn file ảnh hợp lệ (jpg, png, gif, webp). SVG không được hỗ trợ.")
+      }
     }
   }
 
@@ -426,20 +372,13 @@ function ChatBot(props) {
     }
   }
 
-  // Hàm xóa toàn bộ cache
+  // Hàm reset về chat mặc định (không còn cache nữa)
   const clearAllCache = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử trò chuyện? Hành động này không thể hoàn tác.")) {
-      try {
-        localStorage.removeItem("vivi_chat_history")
-        localStorage.removeItem("vivi_current_chat_id")
-        // Reset về chat mặc định
-        setChats(defaultChats)
-        setCurrentChatId("default")
-        alert("Đã xóa toàn bộ lịch sử trò chuyện.")
-      } catch (error) {
-        console.error("Lỗi khi xóa cache:", error)
-        alert("Có lỗi xảy ra khi xóa cache.")
-      }
+      // Reset về chat mặc định
+      setChats(defaultChats)
+      setCurrentChatId("default")
+      alert("Đã xóa toàn bộ lịch sử trò chuyện.")
     }
   }
 
@@ -549,12 +488,6 @@ function ChatBot(props) {
                   </div>
                   <div className="chat-bubble chat-bubble-gradient-receive break-words max-w-[85%] lg:max-w-[70%] shadow-lg">
                     <ReactMarkdown className="prose prose-sm max-w-none">{dataMessages[1][0]}</ReactMarkdown>
-                    {dataMessages[1][1] && dataMessages[1][1].length > 0 && (
-                      <>
-                        <div className="divider m-0 my-2 opacity-50"></div>
-                        <LinkBox links={dataMessages[1][1]} />
-                      </>
-                    )}
                   </div>
                 </div>
               ) : (

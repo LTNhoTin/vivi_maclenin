@@ -76,12 +76,29 @@ ensure_dependencies(config)
 
 import uvicorn
 import logging
+import os
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from typing import List, Union
+
+# Cấu hình logging: chỉ hiển thị thông tin cần thiết
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+# Tắt các log không cần thiết từ các thư viện
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Tắt TensorFlow warnings
+logging.getLogger('tensorflow').setLevel(logging.ERROR)
+logging.getLogger('transformers').setLevel(logging.ERROR)
+logging.getLogger('sentence_transformers').setLevel(logging.WARNING)
+logging.getLogger('httpx').setLevel(logging.WARNING)
+logging.getLogger('httpcore').setLevel(logging.WARNING)
+logging.getLogger('urllib3').setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
@@ -125,14 +142,20 @@ class RebuildRequest(BaseModel):
 @app.on_event("startup")
 def startup_event():
     global ollama_client, openai_client
+    logger.info("=" * 60)
+    logger.info("[STARTUP] Đang khởi tạo các clients...")
+    
     response_language = config.get("response_language", "vi")
     max_output_tokens = int(config.get("max_output_tokens", 150))
     temperature = float(config.get("temperature", 0.2))
     
-    # Khởi tạo Ollama client (cho câu hỏi text và vision)
-    base_url = os.getenv("OLLAMA_BASE_URL", "http://server.nhotin.space:11434")
+    # Khởi tạo GPTOSS 20B Finetune client (cho câu hỏi text và vision)
+    base_url = os.getenv("OLLAMA_BASE_URL")
+    if not base_url:
+        raise ValueError("OLLAMA_BASE_URL environment variable is required")
     ollama_model_name = os.getenv("OLLAMA_MODEL_NAME", "gpt-oss:20b")
     vision_model_name = os.getenv("OLLAMA_VISION_MODEL_NAME", "gemma3:latest")
+    logger.info(f"[STARTUP] Khởi tạo GPTOSS 20B Finetune client: {ollama_model_name} tại {base_url}")
     ollama_client = OllamaClient(
         base_url=base_url,
         model_name=ollama_model_name,
@@ -141,12 +164,14 @@ def startup_event():
         max_output_tokens=max_output_tokens,
         temperature=temperature,
     )
+    logger.info(f"[STARTUP] ✓ GPTOSS 20B Finetune client đã sẵn sàng")
     
     # Khởi tạo OpenAI client (cho câu hỏi có ảnh)
     api_key = os.getenv("OPENAI_API_KEY", "")
     openai_model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-4.1-nano")
     if not api_key:
         raise ValueError("OPENAI_API_KEY không được tìm thấy trong environment variables")
+    logger.info(f"[STARTUP] Khởi tạo OpenAI client: {openai_model_name}")
     openai_client = OpenAIClient(
         api_key=api_key,
         model_name=openai_model_name,
@@ -155,14 +180,21 @@ def startup_event():
         temperature=temperature,
     )
     
+    logger.info(f"[STARTUP] ✓ OpenAI client đã sẵn sàng")
+    
+    # Load RAG index
+    logger.info("[STARTUP] Đang load RAG index...")
     try:
         rag.load_index()
-    except Exception:
+        logger.info("[STARTUP] ✓ RAG index đã load thành công")
+    except Exception as e:
+        logger.warning(f"[STARTUP] Không thể load index hiện có: {e}, đang build lại...")
         project_root = Path(__file__).resolve().parent.parent
         data_path_cfg = config.get("data_path", "data/data.txt")
         data_path = (project_root / data_path_cfg) if not Path(data_path_cfg).is_absolute() else Path(data_path_cfg)
         if not data_path.exists():
             raise FileNotFoundError(f"Không thấy file dữ liệu: {data_path}")
+        logger.info(f"[STARTUP] Đang đọc và xử lý dữ liệu từ {data_path}")
         text = data_path.read_text(encoding="utf-8")
         text = preprocess_text(text)
         chunks = chunk_text(
@@ -172,8 +204,14 @@ def startup_event():
             separators=config.get("separators", None),
             source=str(data_path)
         )
+        logger.info(f"[STARTUP] Đã tạo {len(chunks)} chunks, đang build index...")
         rag.build_index(chunks)
         rag.load_index()
+        logger.info("[STARTUP] ✓ Đã build và load RAG index thành công")
+    
+    logger.info("=" * 60)
+    logger.info("[STARTUP] ✓ Tất cả services đã sẵn sàng!")
+    logger.info("=" * 60)
 
 
 @app.get("/health")
@@ -206,7 +244,7 @@ def _is_about_vivi(question: str) -> bool:
 
 def _get_bot_config_info() -> str:
     """Trả về thông tin cấu hình chatbot."""
-    ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://server.nhotin.space:11434")
+    ollama_base_url = os.getenv("OLLAMA_BASE_URL", "N/A")
     ollama_model_name = os.getenv("OLLAMA_MODEL_NAME", "gpt-oss:20b")
     openai_model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-4.1-nano")
     
@@ -233,9 +271,11 @@ def _get_bot_config_info() -> str:
 @app.post("/query")
 def query(req: QueryRequest):
     start = time.perf_counter()
+    logger.info(f"[QUERY] Nhận câu hỏi: {req.question[:100]}...")
     
     # Kiểm tra nếu câu hỏi về vivi thì trả về thông tin cấu hình
     if _is_about_vivi(req.question):
+        logger.info("[QUERY] Câu hỏi về bot config, trả về thông tin cấu hình")
         answer = _get_bot_config_info()
         elapsed_ms = int((time.perf_counter() - start) * 1000)
         return {
@@ -248,27 +288,62 @@ def query(req: QueryRequest):
     
     contexts_for_llm = []
     
+    # RAG Search
+    logger.info(f"[RAG] Bắt đầu search với top_k={req.top_k or rag.top_k_default}")
     results = rag.search(req.question, top_k=req.top_k)
+    logger.info(f"[RAG] Tìm thấy {len(results)} kết quả")
+    
+    # Filter theo similarity threshold
     similarity_threshold = float(config.get("similarity_threshold", 0.6))
     filtered = [r for r in results if float(r.get("score", 0.0)) >= similarity_threshold]
+    logger.info(f"[RAG] Sau filter (threshold={similarity_threshold}): {len(filtered)} contexts")
+    
+    # Giới hạn số lượng contexts
     contexts_max = int(config.get("contexts_max", 3))
     contexts_for_llm = filtered[:contexts_max]
+    if contexts_for_llm:
+        scores_str = ', '.join([f'{c["score"]:.3f}' for c in contexts_for_llm])
+        logger.info(f"[RAG] Sử dụng {len(contexts_for_llm)} contexts (scores: [{scores_str}])")
+    else:
+        logger.warning("[RAG] Không có contexts nào đạt ngưỡng similarity")
     
     # Websearch được bật thủ công qua nút toggle từ frontend
     use_websearch = req.use_websearch or False
     
-    # Debug logging
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
-    logger = logging.getLogger(__name__)
-    logger.debug(f"Query request: use_websearch={use_websearch}, model={openai_client.model_name}, use_responses_endpoint={openai_client.use_responses_endpoint}")
-    
-    # Xử lý: có ảnh HOẶC bật web search → GPT-4.1 nano (OpenAI), không có → GPT-OSS (Ollama)
+    # Xử lý: có ảnh HOẶC bật web search → GPT-4.1 nano (OpenAI), không có → GPTOSS 20B Finetune
     image_urls = req.image_urls or []
     file_urls = req.file_urls or []
+    
+    # Validate image formats - OpenAI chỉ hỗ trợ: png, jpeg, gif, webp
+    validated_image_urls = []
+    allowed_mime_types = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp']
+    
+    for img_url in image_urls:
+        if isinstance(img_url, str) and img_url.startswith('data:'):
+            # Extract MIME type from data URL
+            mime_match = img_url.split(';')[0].split(':')[1] if ':' in img_url else None
+            if mime_match and mime_match in allowed_mime_types:
+                validated_image_urls.append(img_url)
+            elif mime_match == 'image/svg+xml':
+                return JSONResponse(
+                    status_code=400,
+                    content={"error": "Định dạng SVG không được hỗ trợ. Vui lòng sử dụng định dạng: png, jpeg, gif, hoặc webp."}
+                )
+            else:
+                return JSONResponse(
+                    status_code=400,
+                    content={"error": f"Định dạng hình ảnh không được hỗ trợ: {mime_match}. Chỉ hỗ trợ: png, jpeg, gif, webp."}
+                )
+        else:
+            # Nếu không phải data URL, giả sử hợp lệ (có thể là URL)
+            validated_image_urls.append(img_url)
+    
+    image_urls = validated_image_urls
     has_images = len(image_urls) > 0 or len(file_urls) > 0
     
+    # Chọn model dựa trên điều kiện
     if has_images or use_websearch:
+        logger.info(f"[MODEL] Chọn OpenAI ({openai_client.model_name}) - has_images={has_images}, use_websearch={use_websearch}")
         # Có ảnh hoặc bật web search → gọi GPT-4.1 nano (OpenAI)
         answer, meta = openai_client.answer(
             req.question,
@@ -278,12 +353,16 @@ def query(req: QueryRequest):
             use_websearch=use_websearch
         )
     else:
-        # Không có ảnh và không cần web search → dùng GPT-OSS (Ollama)
+        logger.info(f"[MODEL] Chọn GPTOSS 20B Finetune ({ollama_client.model_name}) - không có ảnh và không websearch")
+        # Không có ảnh và không cần web search → dùng GPTOSS 20B Finetune
         answer, meta = ollama_client.answer(
             req.question, 
             contexts_for_llm
         )
+    
     elapsed_ms = int((time.perf_counter() - start) * 1000)
+    logger.info(f"[QUERY] Hoàn thành trong {elapsed_ms}ms, độ dài answer: {len(answer)} chars")
+    
     return {
         "question": req.question,
         "answer": answer,
@@ -400,7 +479,7 @@ async def query_with_upload(
     # Websearch được bật thủ công qua nút toggle từ frontend
     use_websearch = use_websearch or False
     
-    # Xử lý: có ảnh HOẶC bật web search → GPT-4.1 nano (OpenAI), không có → GPT-OSS (Ollama)
+    # Xử lý: có ảnh HOẶC bật web search → GPT-4.1 nano (OpenAI), không có → GPTOSS 20B Finetune
     has_images = len(image_urls) > 0
     
     if has_images or use_websearch:
@@ -413,7 +492,7 @@ async def query_with_upload(
             use_websearch=use_websearch
         )
     else:
-        # Không có ảnh và không cần web search → dùng GPT-OSS (Ollama)
+        # Không có ảnh và không cần web search → dùng GPTOSS 20B Finetune
         answer, meta = ollama_client.answer(
             question, 
             contexts_for_llm

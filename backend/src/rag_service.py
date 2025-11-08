@@ -1,6 +1,7 @@
 import json
 import os
 import pickle
+import logging
 from pathlib import Path
 from typing import List, Dict
 
@@ -8,6 +9,8 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+
+logger = logging.getLogger(__name__)
 
 try:
     import faiss
@@ -21,7 +24,11 @@ class RagService:
         self.project_root = Path(__file__).resolve().parent.parent
 
         def _abs(p: str | os.PathLike) -> Path:
-            pth = Path(p)
+            p_str = str(p)
+            # Expand ~ to home directory
+            if p_str.startswith("~"):
+                p_str = os.path.expanduser(p_str)
+            pth = Path(p_str)
             return pth if pth.is_absolute() else (self.project_root / pth)
 
         self.model_path = _abs(config.get("embedding_model_path", "src/final_model"))
@@ -38,11 +45,27 @@ class RagService:
         self.tfidf_vectorizer: TfidfVectorizer | None = None
         if self.backend in ("sbert", "gemma"):
             from sentence_transformers import SentenceTransformer
+            logger.info(f"[RAG] Đang load embedding model từ {self.model_path} (backend: {self.backend})")
             try:
-                self.embedder = SentenceTransformer(str(self.model_path), device="cpu")
-            except TypeError:
-                self.embedder = SentenceTransformer(str(self.model_path))
+                # Thử load với device="cpu" trước
+                try:
+                    self.embedder = SentenceTransformer(str(self.model_path), device="cpu")
+                    logger.info(f"[RAG] ✓ Embedding model đã load thành công")
+                except (TypeError, FileNotFoundError, OSError) as e:
+                    # Nếu fail, thử load không có device parameter
+                    try:
+                        self.embedder = SentenceTransformer(str(self.model_path))
+                        logger.info(f"[RAG] ✓ Embedding model đã load thành công (không chỉ định device)")
+                    except Exception as e2:
+                        # Nếu vẫn fail, log lỗi và để embedder = None
+                        logger.warning(f"[RAG] ✗ Không thể load embedding model từ {self.model_path}: {e2}")
+                        logger.warning("[RAG] Embedding sẽ không hoạt động. Hãy kiểm tra đường dẫn model hoặc chuyển sang backend 'tfidf'")
+                        self.embedder = None
+            except Exception as e:
+                logger.error(f"[RAG] ✗ Lỗi khi khởi tạo SentenceTransformer: {e}")
+                self.embedder = None
         elif self.backend == "tfidf":
+            logger.info("[RAG] Sử dụng backend TF-IDF")
             self.tfidf_vectorizer = TfidfVectorizer(max_features=50000)
 
         self.index = None
@@ -85,11 +108,13 @@ class RagService:
                 np.save(str(self.tfidf_matrix_path).replace('.npz', '.npy'), X.toarray())
 
     def load_index(self):
+        logger.info(f"[RAG] Đang load index (backend: {self.backend}, use_faiss: {self.use_faiss})")
         if not Path(self.docstore_path).exists():
             raise FileNotFoundError("Chưa có docstore để load.")
         with open(self.docstore_path, "r", encoding="utf-8") as f:
             data = json.load(f)
         self.docstore = data.get("chunks", [])
+        logger.info(f"[RAG] Đã load {len(self.docstore)} chunks từ docstore")
 
         if self.backend in ("sbert", "gemma"):
             if self.use_faiss:
@@ -98,6 +123,7 @@ class RagService:
                 if not Path(self.faiss_index_path).exists():
                     raise FileNotFoundError("Chưa có FAISS index để load.")
                 self.index = faiss.read_index(str(self.faiss_index_path))
+                logger.info(f"[RAG] ✓ Đã load FAISS index với {self.index.ntotal} vectors")
                 self.nn_index = None
                 self.vectors_db = None
             else:
@@ -106,6 +132,7 @@ class RagService:
                 self.vectors_db = np.load(self.vectors_path)
                 self.nn_index = NearestNeighbors(metric="cosine")
                 self.nn_index.fit(self.vectors_db)
+                logger.info(f"[RAG] ✓ Đã load {len(self.vectors_db)} vectors và build kNN index")
                 self.index = None
         elif self.backend == "tfidf":
             if not Path(self.vectorizer_path).exists():
@@ -121,6 +148,7 @@ class RagService:
                     self.tfidf_matrix = np.load(alt)
                 else:
                     raise FileNotFoundError("Chưa có ma trận TF-IDF để load.")
+            logger.info(f"[RAG] ✓ Đã load TF-IDF vectorizer và matrix")
 
     def is_ready(self) -> bool:
         backend_ready = False
@@ -131,22 +159,32 @@ class RagService:
         return backend_ready and len(self.docstore) > 0
 
     def encode(self, texts: List[str]) -> np.ndarray:
-        if (self.backend not in ("sbert", "gemma")) or self.embedder is None:
-            raise RuntimeError("encode chỉ dùng cho backend sbert.")
+        if self.backend not in ("sbert", "gemma"):
+            raise RuntimeError("encode chỉ dùng cho backend sbert hoặc gemma.")
+        if self.embedder is None:
+            raise RuntimeError(
+                f"Embedding model chưa được load. "
+                f"Kiểm tra đường dẫn model: {self.model_path} "
+                f"hoặc chuyển sang backend 'tfidf' trong settings.json"
+            )
+        logger.debug(f"[EMBEDDING] Đang encode {len(texts)} texts")
         emb = self.embedder.encode(texts, convert_to_numpy=True, normalize_embeddings=True)
         if isinstance(emb, list):
             emb = np.array(emb)
+        logger.debug(f"[EMBEDDING] ✓ Đã encode thành công, shape: {emb.shape}")
         return emb.astype(np.float32)
 
     def search(self, query: str, top_k: int = None) -> List[Dict]:
         k = int(top_k or self.top_k_default)
         results = []
         if self.backend in ("sbert", "gemma"):
+            logger.debug(f"[SEARCH] Đang encode query và search với {self.backend} backend")
             q_emb = self.encode([query])
             if self.use_faiss:
                 if self.index is None:
                     raise RuntimeError("FAISS index chưa sẵn sàng.")
                 distances, indices = self.index.search(q_emb, k)
+                logger.debug(f"[SEARCH] FAISS search hoàn thành, tìm thấy {len(indices[0])} kết quả")
                 for score, idx in zip(distances[0], indices[0]):
                     if idx < 0 or idx >= len(self.docstore):
                         continue
@@ -160,6 +198,7 @@ class RagService:
                 if self.nn_index is None or self.vectors_db is None:
                     raise RuntimeError("kNN index chưa sẵn sàng.")
                 distances, indices = self.nn_index.kneighbors(q_emb, n_neighbors=k, return_distance=True)
+                logger.debug(f"[SEARCH] kNN search hoàn thành, tìm thấy {len(indices[0])} kết quả")
                 for score, idx in zip(distances[0], indices[0]):
                     if idx < 0 or idx >= len(self.docstore):
                         continue
@@ -170,11 +209,13 @@ class RagService:
                         "score": float(1.0 - score)
                     })
         elif self.backend == "tfidf":
+            logger.debug(f"[SEARCH] Đang search với TF-IDF backend")
             if self.tfidf_vectorizer is None or self.tfidf_matrix is None:
                 raise RuntimeError("TF-IDF index chưa sẵn sàng.")
             q_vec = self.tfidf_vectorizer.transform([query])
             sims = cosine_similarity(q_vec, self.tfidf_matrix).flatten()
             top_idx = np.argsort(-sims)[:k]
+            logger.debug(f"[SEARCH] TF-IDF search hoàn thành, tìm thấy {len(top_idx)} kết quả")
             for idx in top_idx:
                 item = self.docstore[idx]
                 results.append({
