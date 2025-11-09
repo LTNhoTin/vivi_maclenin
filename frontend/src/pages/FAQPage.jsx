@@ -19,7 +19,7 @@ const dataFAQs = [
 
 function FAQPage() {
   return (
-    <div className="flex justify-center min-h-[85vh] h-auto bg-gradient-to-br from-orange-50 to-orange-100">
+    <div className="w-full flex justify-center min-h-[85vh] h-auto bg-gradient-to-br from-orange-50 to-orange-100">
       <div className="md:w-[50%]">
         <h1 className="text-3xl text-center font-bold p-5 bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-orange-600">
           Những câu hỏi thường gặp (FAQs)
